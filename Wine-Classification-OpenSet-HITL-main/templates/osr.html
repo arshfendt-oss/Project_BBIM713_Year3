@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-heading">
+    <h1>Open-Set Recognition</h1>
+    <p>The OSR module prevents unseen Wine Keys from being automatically forced into an existing known class. Records with insufficient known-class confidence are rejected as UNKNOWN and forwarded for semantic clustering.</p>
+</div>
+
+<div class="kpi-grid compact">
+    {% for label, keys in [
+        ("OSR Accuracy", ["OSR Accuracy", "osr_accuracy"]),
+        ("Unknown Precision", ["Unknown Precision", "unknown_precision"]),
+        ("Unknown Recall", ["Unknown Recall", "unknown_recall"]),
+        ("Unknown F1", ["Unknown F1", "unknown_f1"]),
+        ("AUROC", ["AUROC", "osr_auroc"]),
+        ("Known Rejection Rate", ["Known Rejection Rate", "known_rejection_rate"]),
+        ("Unknown Detection Rate", ["Unknown Detection Rate", "unknown_detection_rate"])
+    ] %}
+    <div class="kpi-card"><span>{{ label }}</span><strong>{{ fmt(metrics.get(keys[0]) or metrics.get(keys[1])) }}</strong></div>
+    {% endfor %}
+    <div class="kpi-card"><span>OSR Threshold</span><strong>{{ fmt(threshold) }}</strong></div>
+</div>
+
+<div class="grid-2 mt-4">
+    {% for title, img in [("OSR Analysis", osr_analysis), ("Confidence Distribution", osr_confidence), ("ROC Curve", osr_roc)] %}
+    {% if img %}
+    <section class="panel">
+        <h2>{{ title }}</h2>
+        <img src="{{ figure_url(img) }}" class="figure-img image-modal-trigger" data-title="{{ title }}" alt="{{ title }}">
+    </section>
+    {% endif %}
+    {% endfor %}
+</div>
+{% if not osr_analysis and not osr_confidence and not osr_roc %}
+<section class="panel mt-4"><p class="empty-state">{{ missing_message }}</p></section>
+{% endif %}
+
+<section class="panel mt-4">
+    <div class="section-row">
+        <h2>Unknown Prediction Records</h2>
+        <div class="filters">
+            <button class="btn btn-outline-secondary btn-sm osr-filter active" data-filter="all">All</button>
+            <button class="btn btn-outline-secondary btn-sm osr-filter" data-filter="known">Known</button>
+            <button class="btn btn-outline-secondary btn-sm osr-filter" data-filter="unknown">Unknown</button>
+        </div>
+    </div>
+    {% if rows %}
+    <div class="table-responsive">
+        <table class="table table-hover align-middle" id="osrTable">
+            <thead><tr><th>Wine Text</th><th>Predicted Known Class</th><th>Confidence</th><th>OSR Decision</th></tr></thead>
+            <tbody>
+            {% for row in rows %}
+            {% set decision = (row.get("osr_decision") or row.get("decision") or row.get("osr_status") or row.get("predicted_status") or "UNKNOWN")|upper %}
+            <tr data-osr="{{ decision|lower }}">
+                <td class="text-cell">{{ row.get("text") or row.get("wine_text") or row.get("description") or "N/A" }}</td>
+                <td>{{ row.get("predicted_label") or row.get("predicted_known_class") or row.get("closest_known_class") or "N/A" }}</td>
+                <td>{{ fmt(row.get("confidence") or row.get("max_confidence") or row.get("known_confidence")) }}</td>
+                <td><span class="badge {{ 'text-bg-success' if decision == 'KNOWN' else 'text-bg-warning' }}">{{ decision }}</span></td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty-state">{{ missing_message }}</p>
+    {% endif %}
+</section>
+{% endblock %}

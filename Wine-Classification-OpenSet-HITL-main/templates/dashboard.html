@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-heading">
+    <h1>Wine Classification Intelligence Dashboard</h1>
+    <p>Unknown Rejection and Clustering for Post-Training Labelling</p>
+</div>
+
+<div class="kpi-grid">
+    {% for label, value in kpis %}
+    <div class="kpi-card">
+        <span>{{ label }}</span>
+        <strong>{{ fmt(value) }}</strong>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="grid-2 mt-4">
+    <section class="panel">
+        <h2>ML Pipeline</h2>
+        <div class="pipeline">
+            <div>Wine Dataset</div><span>↓</span>
+            <div>Data Preprocessing</div><span>↓</span>
+            <div>BERT Embeddings</div><span>↓</span>
+            <div>Known Wine Classifier</div><span>↓</span>
+            <div>Open-Set Recognition</div>
+            <div class="pipeline-split"><strong>KNOWN</strong><strong>UNKNOWN</strong></div>
+            <div class="pipeline-split"><small>Wine Key Prediction</small><small>Semantic Clustering</small></div>
+            <span>↓</span>
+            <div>HITL Review → Verified Labels → Model Retraining → Updated Classifier</div>
+        </div>
+    </section>
+    <section class="panel">
+        <h2>Recent Experiment Summary</h2>
+        {% if summary %}
+        <div class="summary-list">
+            {% for key, value in summary.items() %}
+            <div><span>{{ key.replace("_", " ").title() }}</span><strong>{{ fmt(value) }}</strong></div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="empty-state">{{ missing_message }}</p>
+        {% endif %}
+    </section>
+</div>
+
+<div class="grid-3 mt-4">
+    <section class="panel">
+        <h2>Classification Performance</h2>
+        <canvas id="classificationChart" data-labels='{{ classification_chart["labels"] | tojson }}' data-values='{{ classification_chart["values"] | tojson }}'></canvas>
+    </section>
+    <section class="panel">
+        <h2>OSR Performance</h2>
+        <canvas id="osrChart" data-labels='{{ osr_chart["labels"] | tojson }}' data-values='{{ osr_chart["values"] | tojson }}'></canvas>
+    </section>
+    <section class="panel">
+        <h2>Retraining Comparison</h2>
+        <canvas id="retrainingMiniChart" data-labels='{{ retraining_chart["labels"] | tojson }}' data-values='{{ retraining_chart["values"] | tojson }}'></canvas>
+    </section>
+</div>
+{% endblock %}

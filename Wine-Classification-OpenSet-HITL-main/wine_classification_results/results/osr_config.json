@@ -1,0 +1,5 @@
+{
+    "method": "Maximum Softmax Probability rejection",
+    "threshold": 0.18341386468146653,
+    "calibration_percentile": 5
+}

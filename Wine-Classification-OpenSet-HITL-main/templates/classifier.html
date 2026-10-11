@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-heading">
+    <h1>Wine Key Classification</h1>
+    <p>Classify known wine records and inspect precomputed classifier outputs.</p>
+</div>
+
+<section class="panel">
+    <h2>Interactive Wine Classification</h2>
+    {% if not prediction_status.available %}
+    <div class="alert alert-warning">{{ prediction_status.message }}</div>
+    {% endif %}
+    <form id="predictionForm" class="prediction-form">
+        <label for="wineText" class="form-label">Wine Name / Description</label>
+        <textarea class="form-control" id="wineText" name="wine_text" maxlength="1000" rows="3" {% if not prediction_status.available %}disabled{% endif %}>Chateau Margaux Bordeaux Cabernet Sauvignon 2018</textarea>
+        <button class="btn btn-primary mt-3" type="submit" {% if not prediction_status.available %}disabled{% endif %}>Classify Wine</button>
+    </form>
+    <div id="predictionResult" class="result-card mt-3 d-none"></div>
+</section>
+
+<section class="panel mt-4">
+    <div class="section-row">
+        <h2>Experiment Results</h2>
+        <input class="form-control table-search" data-table="knownPredictionsTable" placeholder="Search predictions">
+    </div>
+    <div class="metric-row">
+        <div><span>Total Predictions</span><strong>{{ stats.total }}</strong></div>
+        <div><span>Correct</span><strong>{{ stats.correct }}</strong></div>
+        <div><span>Incorrect</span><strong>{{ stats.incorrect }}</strong></div>
+        <div><span>Average Confidence</span><strong>{{ fmt(stats.avg_confidence) }}</strong></div>
+    </div>
+    {% if rows %}
+    <div class="table-responsive">
+        <table class="table table-hover align-middle searchable-table" id="knownPredictionsTable">
+            <thead><tr><th>Wine Text</th><th>Actual Wine Key</th><th>Predicted Wine Key</th><th>Confidence</th><th>Status</th></tr></thead>
+            <tbody>
+            {% for row in rows %}
+            {% set actual = row.actual_label or row.winekey or "" %}
+            {% set predicted = row.predicted_label or "" %}
+            <tr>
+                <td class="text-cell">{{ row.text }}</td>
+                <td>{{ actual }}</td>
+                <td>{{ predicted }}</td>
+                <td>{{ fmt(row.confidence) }}</td>
+                <td><span class="badge {{ 'text-bg-success' if actual|string == predicted|string else 'text-bg-danger' }}">{{ 'Correct' if actual|string == predicted|string else 'Incorrect' }}</span></td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty-state">{{ missing_message }}</p>
+    {% endif %}
+</section>
+
+<div class="grid-2 mt-4">
+    {% for title, img in [("Confusion Matrix", confusion_matrix), ("Classification Metrics", classification_metrics_img)] %}
+    <section class="panel">
+        <h2>{{ title }}</h2>
+        {% if img %}
+        <img src="{{ figure_url(img) }}" class="figure-img image-modal-trigger" data-title="{{ title }}" alt="{{ title }}">
+        {% else %}
+        <p class="empty-state">{{ missing_message }}</p>
+        {% endif %}
+    </section>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-heading">
+    <h1>About the Capstone Project</h1>
+    <p>Unknown Rejection and Clustering for Post-Training Labelling</p>
+</div>
+
+<section class="panel">
+    <h2>Business Context</h2>
+    <p>Large wine databases continuously receive records belonging to both existing and previously unseen Wine Keys. Conventional closed-set classifiers may incorrectly force unseen records into known categories.</p>
+    <h2>Project Objective</h2>
+    <ol class="objective-list">
+        <li>Classify known wine records.</li>
+        <li>Detect unknown or unseen Wine Keys.</li>
+        <li>Semantically cluster rejected records.</li>
+        <li>Support human-assisted labelling.</li>
+        <li>Experimentally retrain the classifier with newly verified records.</li>
+    </ol>
+</section>
+
+<section class="panel mt-4">
+    <h2>Technology</h2>
+    <div class="tech-grid">
+        {% for item in ["Python", "Google Colab", "BERT / Sentence Transformers", "Scikit-learn", "Open-Set Recognition", "Semantic Clustering", "Human-in-the-Loop", "Flask", "Bootstrap", "Chart.js", "PyCharm"] %}
+        <span>{{ item }}</span>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="panel mt-4">
+    <h2>Architecture</h2>
+    <div class="architecture">
+        <div>Experiment Artifacts<br><small>CSV · JSON · PKL · PNG</small></div>
+        <span>→</span>
+        <div>Flask Services<br><small>data · model · HITL</small></div>
+        <span>→</span>
+        <div>Jinja Views<br><small>dashboard · workflows</small></div>
+        <span>→</span>
+        <div>Reviewer<br><small>inspect · verify · export</small></div>
+    </div>
+</section>
+{% endblock %}

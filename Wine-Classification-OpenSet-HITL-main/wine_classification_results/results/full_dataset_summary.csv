@@ -1,0 +1,2 @@
+total_clean_records,unique_wine_keys,average_text_words,median_text_words,minimum_class_size,maximum_class_size
+482684,12842,15.092661037034581,13.0,27,76

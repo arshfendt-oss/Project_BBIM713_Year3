@@ -1,0 +1,8 @@
+Measure,Score
+Original known-class accuracy,0.9973787680209698
+Unknown detection before retraining,1.0
+New-class accuracy after retraining,1.0
+New-class precision after retraining,1.0
+New-class recall after retraining,1.0
+New-class F1 after retraining,1.0
+Original known accuracy after retraining,0.9973787680209698

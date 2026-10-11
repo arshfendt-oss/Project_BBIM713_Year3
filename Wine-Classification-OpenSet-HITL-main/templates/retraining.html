@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-heading">
+    <h1>Experimental Model Retraining</h1>
+    <p>OSR-rejected records are semantically clustered, verified through the HITL workflow, and selected verified records can be incorporated into an experimental retraining process.</p>
+</div>
+
+<div class="alert alert-info">Actual HITL verified labels are stored in <strong>hitl_verified_labels.csv</strong>. Experimental or simulated retraining results are shown only when exported by the ML experiment.</div>
+
+<div class="kpi-grid compact">
+    <div class="kpi-card"><span>Original Training Records</span><strong>{{ fmt(summary.get("training_records")) }}</strong></div>
+    <div class="kpi-card"><span>New Verified Records</span><strong>{{ fmt(summary.get("experimental_retraining_records")) }}</strong></div>
+    <div class="kpi-card"><span>New Wine Keys</span><strong>{{ fmt(summary.get("heldout_unknown_classes")) }}</strong></div>
+    <div class="kpi-card"><span>Before Performance</span><strong>{{ fmt(summary.get("classification_accuracy")) }}</strong></div>
+    <div class="kpi-card"><span>After Performance</span><strong>{{ fmt(summary.get("known_accuracy_after_retraining") or summary.get("new_class_accuracy_after_retraining")) }}</strong></div>
+</div>
+
+<div class="grid-2 mt-4">
+    <section class="panel">
+        <h2>Retraining Comparison Chart</h2>
+        {% if chart["values"] %}
+        <canvas id="retrainingChart" data-labels='{{ chart["labels"] | tojson }}' data-values='{{ chart["values"] | tojson }}'></canvas>
+        {% else %}
+        <p class="empty-state">{{ missing_message }}</p>
+        {% endif %}
+    </section>
+    <section class="panel">
+        <h2>Retraining Figure</h2>
+        {% if retraining_image %}
+        <img src="{{ figure_url(retraining_image) }}" class="figure-img image-modal-trigger" data-title="Retraining Comparison" alt="Retraining comparison">
+        {% else %}
+        <p class="empty-state">{{ missing_message }}</p>
+        {% endif %}
+    </section>
+</div>
+
+<section class="panel mt-4">
+    <h2>Before Retraining / After Retraining</h2>
+    {% if rows %}
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead><tr>{% for key in rows[0].keys() %}<th>{{ key.replace("_", " ").title() }}</th>{% endfor %}</tr></thead>
+            <tbody>{% for row in rows %}<tr>{% for value in row.values() %}<td>{{ fmt(value) }}</td>{% endfor %}</tr>{% endfor %}</tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty-state">{{ missing_message }}</p>
+    {% endif %}
+</section>
+{% endblock %}

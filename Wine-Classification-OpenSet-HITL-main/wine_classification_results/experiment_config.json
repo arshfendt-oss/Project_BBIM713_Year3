@@ -1,0 +1,12 @@
+{
+    "seed": 42,
+    "known_classes": 100,
+    "heldout_classes": 20,
+    "minimum_records_per_class": 30,
+    "maximum_records_per_class": 200,
+    "maximum_external_unknown": 5000,
+    "bert_model": "sentence-transformers/all-MiniLM-L6-v2",
+    "bert_batch_size": 128,
+    "requested_clusters": 20,
+    "osr_percentile": 5
+}

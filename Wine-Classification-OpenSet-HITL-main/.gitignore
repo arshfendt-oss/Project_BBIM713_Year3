@@ -1,0 +1,25 @@
+# PyCharm
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Environment / secrets
+.env
+*.env
+
+# Large raw datasets
+Wine_Dataset.zip
+matched_wines.csv
+filtered_unknown.csv
+
+# OS
+.DS_Store
+Thumbs.db

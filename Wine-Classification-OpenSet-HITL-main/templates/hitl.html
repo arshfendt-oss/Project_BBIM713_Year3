@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-heading">
+    <h1>Human-in-the-Loop Labelling</h1>
+    <p>Review OSR-rejected cluster labels and preserve verified decisions separately from the original experiment output.</p>
+</div>
+
+<div class="kpi-grid compact">
+    <div class="kpi-card"><span>Total Review Records</span><strong>{{ stats.total }}</strong></div>
+    <div class="kpi-card"><span>Pending</span><strong>{{ stats.pending }}</strong></div>
+    <div class="kpi-card"><span>Approved</span><strong>{{ stats.approved }}</strong></div>
+    <div class="kpi-card"><span>Corrected</span><strong>{{ stats.corrected }}</strong></div>
+    <div class="kpi-card"><span>Rejected</span><strong>{{ stats.rejected }}</strong></div>
+    <div class="kpi-card"><span>Completion</span><strong>{{ stats.completion }}%</strong></div>
+</div>
+<div class="progress mt-3" role="progressbar" aria-label="HITL completion">
+    <div class="progress-bar" style="width: {{ stats.completion }}%">{{ stats.completion }}%</div>
+</div>
+
+<section class="panel mt-4">
+    <div class="section-row">
+        <h2>Review Queue</h2>
+        <div class="control-row">
+            <input class="form-control table-search" data-table="hitlTable" placeholder="Search review records">
+            <a class="btn btn-outline-primary" href="{{ url_for('download_hitl') }}">Export Verified Labels</a>
+        </div>
+    </div>
+    {% if rows %}
+    <div class="table-responsive">
+        <table class="table table-hover align-middle searchable-table" id="hitlTable">
+            <thead><tr><th>Record ID</th><th>Wine Description</th><th>Cluster ID</th><th>Suggested Label</th><th>Human Verified Label</th><th>Verification Status</th><th>Action</th></tr></thead>
+            <tbody>
+            {% for row in rows %}
+            <tr>
+                <td>{{ row.record_id }}</td>
+                <td class="text-cell">{{ row.text or row.wine_description }}</td>
+                <td>{{ row.cluster }}</td>
+                <td>{{ row.suggested_cluster_label or row.suggested_label }}</td>
+                <td>{{ row.human_verified_label or "N/A" }}</td>
+                <td><span class="badge status-{{ (row.verification_status or 'PENDING')|lower }}">{{ row.verification_status or "PENDING" }}</span></td>
+                <td>
+                    <form method="post" action="{{ url_for('hitl_update') }}" class="hitl-form">
+                        <input type="hidden" name="record_id" value="{{ row.record_id }}">
+                        <div class="input-group input-group-sm mb-2">
+                            <input class="form-control" name="corrected_label" placeholder="Corrected label">
+                            <button class="btn btn-outline-primary" name="action" value="correct" type="submit">Edit Label</button>
+                        </div>
+                        <button class="btn btn-success btn-sm confirm-action" name="action" value="approve" type="submit">Approve</button>
+                        <button class="btn btn-danger btn-sm confirm-action" name="action" value="reject" type="submit">Reject</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty-state">{{ missing_message }}</p>
+    {% endif %}
+</section>
+{% endblock %}

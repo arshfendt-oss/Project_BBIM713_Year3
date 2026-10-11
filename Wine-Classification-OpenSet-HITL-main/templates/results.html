@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-heading">
+    <h1>Complete Model Evaluation</h1>
+    <p>Consolidated known classification, OSR, clustering, HITL, and retraining outputs loaded from experiment files.</p>
+</div>
+
+<a class="btn btn-primary mb-4" href="{{ url_for('download_summary') }}">Download Experiment Summary</a>
+
+{% for section, rows in sections.items() %}
+<section class="panel mb-4">
+    <h2>{{ section }}</h2>
+    {% if rows %}
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead><tr>{% for key in rows[0].keys() %}<th>{{ key.replace("_", " ").title() }}</th>{% endfor %}</tr></thead>
+            <tbody>{% for row in rows %}<tr>{% for value in row.values() %}<td>{{ fmt(value) }}</td>{% endfor %}</tr>{% endfor %}</tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty-state">{{ missing_message }}</p>
+    {% endif %}
+</section>
+{% endfor %}
+
+<section class="panel mb-4">
+    <h2>HITL</h2>
+    <div class="metric-row">
+        <div><span>Total</span><strong>{{ hitl_stats.total }}</strong></div>
+        <div><span>Pending</span><strong>{{ hitl_stats.pending }}</strong></div>
+        <div><span>Approved</span><strong>{{ hitl_stats.approved }}</strong></div>
+        <div><span>Corrected</span><strong>{{ hitl_stats.corrected }}</strong></div>
+        <div><span>Rejected</span><strong>{{ hitl_stats.rejected }}</strong></div>
+    </div>
+</section>
+
+<section class="panel">
+    <h2>Experiment Figure Gallery</h2>
+    {% if figures %}
+    <div class="gallery">
+        {% for fig in figures %}
+        <article class="gallery-item">
+            <img src="{{ figure_url(fig.filename) }}" class="image-modal-trigger" data-title="{{ fig.title }}" alt="{{ fig.title }}">
+            <h3>{{ fig.title }}</h3>
+            <p>{{ fig.description }}</p>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="empty-state">{{ missing_message }}</p>
+    {% endif %}
+</section>
+{% endblock %}

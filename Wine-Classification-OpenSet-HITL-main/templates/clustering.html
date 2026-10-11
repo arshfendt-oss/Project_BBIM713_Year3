@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-heading">
+    <h1>Semantic Clustering of Unknown Wines</h1>
+    <p>BERT semantic representations are used for grouping similar rejected wine records.</p>
+</div>
+
+<div class="kpi-grid compact">
+    <div class="kpi-card"><span>Total Unknown Records Clustered</span><strong>{{ stats.total }}</strong></div>
+    <div class="kpi-card"><span>Number of Clusters</span><strong>{{ stats.clusters }}</strong></div>
+    <div class="kpi-card"><span>Largest Cluster</span><strong>{{ stats.largest }}</strong></div>
+    <div class="kpi-card"><span>Smallest Cluster</span><strong>{{ stats.smallest }}</strong></div>
+    <div class="kpi-card"><span>Silhouette Score</span><strong>{{ fmt(metrics.get("Silhouette Score") or metrics.get("silhouette_score")) }}</strong></div>
+</div>
+
+<div class="grid-2 mt-4">
+    <section class="panel">
+        <h2>Cluster Distribution</h2>
+        {% if cluster_counts %}
+        <canvas id="clusterChart" data-clusters='{{ cluster_counts | tojson }}'></canvas>
+        {% else %}
+        <p class="empty-state">{{ missing_message }}</p>
+        {% endif %}
+    </section>
+    <section class="panel">
+        <h2>Cluster Visualization</h2>
+        {% if cluster_visualization %}
+        <img src="{{ figure_url(cluster_visualization) }}" class="figure-img image-modal-trigger" data-title="Cluster Visualization" alt="Cluster visualization">
+        {% else %}
+        <p class="empty-state">{{ missing_message }}</p>
+        {% endif %}
+    </section>
+</div>
+
+<section class="panel mt-4">
+    <div class="section-row">
+        <h2>Cluster Review Table</h2>
+        <div class="control-row">
+            <select class="form-select" id="clusterFilter">
+                <option value="all">All Clusters</option>
+                {% for item in cluster_counts %}<option value="{{ item.cluster }}">Cluster {{ item.cluster }}</option>{% endfor %}
+            </select>
+            <input class="form-control table-search" data-table="clusterTable" placeholder="Search clusters">
+        </div>
+    </div>
+    {% if cluster_rows %}
+    <div class="table-responsive">
+        <table class="table table-hover align-middle searchable-table" id="clusterTable">
+            <thead><tr><th>Cluster ID</th><th>Number of Records</th><th>Sample Wine Descriptions</th><th>Source</th></tr></thead>
+            <tbody>
+            {% for row in cluster_rows %}
+            <tr data-cluster="{{ row.cluster }}"><td>{{ row.cluster }}</td><td>{{ row.count }}</td><td class="text-cell">{{ row.samples }}</td><td>{{ row.source }}</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty-state">{{ missing_message }}</p>
+    {% endif %}
+</section>
+{% endblock %}
